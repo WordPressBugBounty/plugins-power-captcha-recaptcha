@@ -3,8 +3,8 @@ Contributors: denisaleman
 Donate link: https://www.buymeacoffee.com/denisaleman
 Tags: captcha, google recaptcha, comment form, login security, anti-spam security, form protection, woocommerce
 Requires at least: 5.0
-Tested up to: 6.8.0
-Stable tag: 1.1.0
+Tested up to: 7.0.2
+Stable tag: 1.2.0
 Requires PHP: 5.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -133,3 +133,12 @@ Read [the official documentation](https://www.google.com/recaptcha/about/)
 * WooCommerce tested up to 9.7.1
 * Added captcha activity report feature.
 * Fixed minor bugs.
+
+= 1.2.0 (2026-07-19) =
+* Tested up to 7.0.2
+* WooCommerce tested up to 10.9.4
+* Add filter `pwrcap_recaptcha_expected_hostname`.
+* Modernize css and js files.
+* Add missing composer files.
+* Fix false CAPTCHA error on login page.
+* Fix tab switch jitter caused by bottom border.

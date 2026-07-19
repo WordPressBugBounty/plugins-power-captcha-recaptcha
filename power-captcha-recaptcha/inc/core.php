@@ -51,7 +51,7 @@ function pwrcap_load_frontend() {
 
 	$site_key = pwrcap_option( 'general', 'site_key' );
 
-	wp_enqueue_script( 'pwrcap-captcha', PWRCAP_URL . '/assets/js/captcha' . $min . '.js', array(), PWRCAP_VERSION, false );
+	wp_enqueue_script( 'pwrcap-captcha', PWRCAP_URL . '/assets/dist/js/captcha' . $min . '.js', array(), PWRCAP_VERSION, false );
 	wp_localize_script(
 		'pwrcap-captcha',
 		'pwrcap',
@@ -64,7 +64,7 @@ function pwrcap_load_frontend() {
 		wp_enqueue_script( 'pwrcap-api', $api_url, array(), PWRCAP_VERSION, false );
 	}
 
-	wp_enqueue_style( 'pwrcap-style', PWRCAP_URL . '/assets/css/captcha' . $min . '.css', array(), PWRCAP_VERSION );
+	wp_enqueue_style( 'pwrcap-style', PWRCAP_URL . '/assets/dist/css/captcha' . $min . '.css', array(), PWRCAP_VERSION );
 }
 add_action( 'login_enqueue_scripts', 'pwrcap_load_frontend' );
 add_action( 'wp_enqueue_scripts', 'pwrcap_load_frontend' );
@@ -253,7 +253,7 @@ function pwrcap_is_valid_captcha_code( $captcha_code ) {
 		/**
 		 * Fires if captcha code is an empty string or has not been sent through the form.
 		 *
-		 * @since 1.0.11
+		 * @since 1.0.9
 		 */
 		do_action( 'pwrcap_no_captcha_code_sent' );
 		return false;
@@ -282,8 +282,25 @@ function pwrcap_is_valid_captcha_code( $captcha_code ) {
 	 * @todo phpcs:ignore Generic.Commenting.Todo.CommentFound
 	 */
 
-	$response = $recaptcha->setExpectedHostname( $server_name )->verify( $captcha_code, $ip_address );
-	$response = apply_filters( 'pwrcap_verification_response', $response );
+
+	/**
+	 * Filters the expected hostname used during server-side reCAPTCHA verification.
+	 *
+	 * By default, the plugin validates that the hostname returned by Google's
+	 * verification service matches the current server hostname. This provides an
+	 * additional security check beyond the standard reCAPTCHA verification.
+	 *
+	 * This filter allows developers to override the expected hostname. A common
+	 * use case is automated testing with Google's official test keys, which always
+	 * return the hostname `testkey.google.com` instead of the actual site hostname.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param string $expected_hostname The expected hostname. Defaults to the current server hostname.
+	 */
+	$expected_hostname = apply_filters( 'pwrcap_recaptcha_expected_hostname', $server_name );
+	$response          = $recaptcha->setExpectedHostname( $expected_hostname )->verify( $captcha_code, $ip_address );
+	$response          = apply_filters( 'pwrcap_verification_response', $response );
 
 	return (bool) $response->isSuccess();
 }
